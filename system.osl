@@ -8,11 +8,13 @@ anim_length = 4
 current_anim = "idle"
 playerx = 0
 playery = 0
-speed = 4
+speed = 3
 
 def "goback"
 playerx = prevx
 playery = prevy
+playerxvel = 0
+playeryvel = 0
 endef
 up = "w"
 down = "s"
@@ -62,20 +64,24 @@ if current_anim != "right" and right.pressed (
 prevx = playerx
 prevy = playery
 if up.pressed (
-playery += speed
+playeryvel += speed
 )
 
 if down.pressed (
-playery -= speed
+playeryvel -= speed
 )
 
 if left.pressed (
-playerx -= speed
+playerxvel -= speed
 )
 
 if right.pressed (
-playerx += speed
+playerxvel += speed
 )
+playerxvel *= 0.7
+playeryvel *= 0.7
+playerx += playerxvel
+playery += playeryvel
 
 location = [].append(playerx).append(playery)
 if location.dist(0,0) > 200 "goback"
