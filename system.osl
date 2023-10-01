@@ -63,21 +63,12 @@ if current_anim != "right" and right.pressed (
 
 prevx = playerx
 prevy = playery
-if up.pressed (
-playeryvel += speed
-)
 
-if down.pressed (
-playeryvel -= speed
-)
+if up.pressed "playeryvel += speed"
+if down.pressed "playeryvel -= speed"
+if left.pressed "playerxvel -= speed"
+if right.pressed "playerxvel += speed"
 
-if left.pressed (
-playerxvel -= speed
-)
-
-if right.pressed (
-playerxvel += speed
-)
 playerxvel *= 0.7
 playeryvel *= 0.7
 playerx += playerxvel
