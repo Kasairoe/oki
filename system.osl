@@ -16,6 +16,7 @@ left = "a"
 right = "d"
 
 mainloop:
+w = window_width
 anim_frame += 0.3
 if anim_frame > anim_length "anim_frame = anim_start"
 
@@ -71,6 +72,6 @@ playerx += speed
 )
 
 goto playerx playery
-image "https://raw.githubusercontent.com/Kasairoe/koi/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" 100
+image "https://raw.githubusercontent.com/Kasairoe/koi/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" w / 10
 
 import "win-buttons"
