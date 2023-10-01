@@ -1,4 +1,5 @@
 window "show"
+window "dimensions" 1000 700
 camx = 0
 camy = 0
 anim_start = 1
@@ -16,14 +17,12 @@ playermapz = 1
 interact_url = "https://raw.githubusercontent.com/Kasairoe/koi/main/ui/interact.png"
 image interact_url 100
 
-interactables = {"0":{"0":{"0":[[0,0,"playermapz -= 1",60]]}}}
+interactables = {"0":{"0":{"1":[[-120,50,"playermapz -= 1",60]]}}}
 
 def "interact" "t"
 loc 999 -2 0 50
 image interact_url 70
-if "e".pressed (
-t
-)
+if "e".pressed t
 endef
 
 def "goback"
@@ -39,14 +38,21 @@ left = "a"
 right = "d"
 
 mainloop:
+current_room = "https://raw.githubusercontent.com/Kasairoe/koi/main/environments/" ++ playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz ++ ".png"
 w = window_width
 game_width = w
 game_height = window_height
 anim_frame += 0.3
 if anim_frame > anim_length "anim_frame = anim_start"
+if game_height < game_width (
+game_scale = game_height
+)
+if game_height > game_width (
+game_scale = game_width
+)
 
-speed = 3
-if "shift".pressed "speed += 2"
+speed = 2
+if "shift".pressed "speed += 1"
 
 if current_anim != "idle" and up.pressed.not and left.pressed.not and right.pressed.not and down.pressed.not (
   anim_start = 1
@@ -96,11 +102,13 @@ playeryvel *= 0.7
 playerx += playerxvel
 playery += playeryvel
 
-px = playerx * game_width / 300
-py = playery * game_height / 300
+px = playerx * game_scale / 300
+py = playery * game_scale / 300
 
 lpx = px.round
 lpy = py.round
+
+image current_room game_scale
 
 location = [].append(lpx).append(lpy)
 
@@ -109,12 +117,14 @@ count = 0
 loop current_interactables.len (
 count += 1
 c = current_interactables.[count]
-x = c.[1]
-y = c.[2]
+x = c.[1].destr * game_scale / 300
+y = c.[2].destr * game_scale / 300
 if location.dist(x,y).round < c.[4].destr "interact c.[3]"
+goto x y
+icon "Close" 1 : c#fff
 )
 
 goto px py
-image "https://raw.githubusercontent.com/Kasairoe/koi/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_width / 10
+image "https://raw.githubusercontent.com/Kasairoe/koi/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
 
 import "win-buttons"
