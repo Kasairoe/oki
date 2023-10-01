@@ -9,9 +9,16 @@ playerx = 0
 playery = 0
 speed = 3
 
+playermapx = 0
+playermapy = 0
+
 image "https://raw.githubusercontent.com/Kasairoe/koi/main/ui/interact.png" 100
 
-interactables = {"home"}
+interactables = {"0":{"0":[[0,0,"test",30]]}}
+
+def "interact" "t"
+goto px py
+endef
 
 def "goback"
 playerx = prevx
@@ -83,9 +90,24 @@ playeryvel *= 0.7
 playerx += playerxvel
 playery += playeryvel
 
-location = [].append(playerx).append(playery)
+px = playerx * game_width / 300
+py = playery * game_height / 300
 
-goto playerx * game_width / 300 playery * game_height / 300
+location = [].append(px).append(py)
+
+current_interactables = interactables.key(playermapx).key(playermapy)
+count = 0
+loop current_interactables.len (
+count += 1
+c = current_interactables.[count]
+x = c.[1]
+y = c.[2]
+t = c.[3]
+d = c.[4]
+if location.dist(x,y) < d "interact t"
+)
+
+goto px py
 image "https://raw.githubusercontent.com/Kasairoe/koi/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_width / 10
 
 import "win-buttons"
