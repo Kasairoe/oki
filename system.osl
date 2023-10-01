@@ -6,6 +6,8 @@ anim_start = 1
 anim_frame = 1
 anim_length = 4
 current_anim = "idle"
+playerx = 0
+playery = 0
 
 up = "w"
 down = "s"
