@@ -8,6 +8,7 @@ anim_length = 4
 current_anim = "idle"
 playerx = 0
 playery = 0
+speed = 4
 
 up = "w"
 down = "s"
@@ -53,7 +54,23 @@ if current_anim != "right" and right.pressed (
   current_anim = "right"
 )
 
-goto 0 0
+if up.pressed (
+playery += speed
+)
+
+if down.pressed (
+playery -= speed
+)
+
+if left.pressed (
+playerx -= speed
+)
+
+if right.pressed (
+playerx += speed
+)
+
+goto playerx playery
 image "https://raw.githubusercontent.com/Kasairoe/koi/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" 100
 
 import "win-buttons"
