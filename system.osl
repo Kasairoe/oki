@@ -3,8 +3,8 @@ window "show"
 camx = 0
 camy = 0
 anim_frame = 0
-anim_length = 3
-current_anim = "fr"
+anim_length = 17
+current_anim = "idle"
 anim_start = 1
 
 def "switchanim" "name"
@@ -22,7 +22,7 @@ anim_frame += 0.1
 if anim_frame > anim_length "anim_frame = anim_start"
 
 if current_anim != "front" and up.pressed.not and left.pressed.not and right.pressed.not and down.pressed.not (
-  switchanim "front"
+  switchanim "idle"
 )
 
 if up.pressed.not and left.pressed.not and right.pressed.not and down.pressed.not "can = true"
