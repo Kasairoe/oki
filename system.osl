@@ -10,6 +10,10 @@ playerx = 0
 playery = 0
 speed = 4
 
+def "goback"
+playerx = prevx
+playery = prevy
+endef
 up = "w"
 down = "s"
 left = "a"
@@ -55,6 +59,8 @@ if current_anim != "right" and right.pressed (
   current_anim = "right"
 )
 
+prevx = playerx
+prevy = playery
 if up.pressed (
 playery += speed
 )
@@ -70,6 +76,9 @@ playerx -= speed
 if right.pressed (
 playerx += speed
 )
+
+location = [].append(playerx).append(playery)
+if location.dist(0,0) > 200 "goback"
 
 goto playerx playery
 image "https://raw.githubusercontent.com/Kasairoe/koi/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" w / 10
