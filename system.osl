@@ -12,12 +12,14 @@ speed = 3
 playermapx = 0
 playermapy = 0
 
-image "https://raw.githubusercontent.com/Kasairoe/koi/main/ui/interact.png" 100
+interact_url = "https://raw.githubusercontent.com/Kasairoe/koi/main/ui/interact.png"
+image interact_url 100
 
 interactables = {"0":{"0":[[0,0,"test",30]]}}
 
 def "interact" "t"
-goto px py
+loc 999 -2 0 50
+image interact_url 70
 endef
 
 def "goback"
@@ -93,7 +95,10 @@ playery += playeryvel
 px = playerx * game_width / 300
 py = playery * game_height / 300
 
-location = [].append(px).append(py)
+lpx = px.round
+lpy = py.round
+
+location = [].append(lpx).append(lpy)
 
 current_interactables = interactables.key(playermapx).key(playermapy)
 count = 0
@@ -102,9 +107,7 @@ count += 1
 c = current_interactables.[count]
 x = c.[1]
 y = c.[2]
-t = c.[3]
-d = c.[4]
-if location.dist(x,y) < d "interact t"
+if location.dist(x,y).round < c.[4].destr "interact c.[3]"
 )
 
 goto px py
