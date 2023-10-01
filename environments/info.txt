@@ -1,0 +1,1 @@
+Put all the environments of the game in this folder
