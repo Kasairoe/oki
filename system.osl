@@ -2,10 +2,10 @@
 window "show"
 camx = 0
 camy = 0
-anim_frame = 6
-anim_length = 10
+anim_start = 1
+anim_frame = 1
+anim_length = 4
 current_anim = "idle"
-anim_start = 6
 
 up = "w"
 down = "s"
