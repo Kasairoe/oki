@@ -17,7 +17,9 @@ playermapz = 1
 loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/koi/main/"
-interactables = {"0x0x1":[[-110,50,["playermapz -= 1"],60]]}
+room_bounds = {"0x0x1":[110,-110,110,-110]}
+collisions = {"0x0x1":[[110,50,100]]}
+interactables = {"0x0x1":[[-110,50,["playermapz -= 1"],60,]]}
 
 def "run_movement"
   prevx = playerx
@@ -28,8 +30,8 @@ def "run_movement"
   if left.pressed "playerxvel -= speed"
   if right.pressed "playerxvel += speed"
 
-  playerxvel *= 0.7
-  playeryvel *= 0.7
+  playerxvel *= 0.6
+  playeryvel *= 0.6
   playerx += playerxvel
   playery += playeryvel
 
@@ -38,11 +40,11 @@ def "run_movement"
 
   lpx = px.round
   lpy = py.round
+  location = [].append(lpx).append(lpy)
 endef
 
 def "run_interactions"
-  location = [].append(lpx).append(lpy)
-  current_interactables = interactables.key(playermapx).key(playermapy).key(playermapz)
+  current_interactables = interactables.key(map_location)
   count = 0
   loop current_interactables.len (
     count += 1
@@ -91,6 +93,29 @@ def "run_animator"
     anim_frame = 5
     anim_length = 10
     current_anim = "right"
+  )
+endef
+
+def "run_collisions"
+  current_room_bounds = room_bounds.key(map_location)
+  // gets the current set of room max xs and ys
+
+  if playerx > current_room_bounds.[1] "goback"
+  if playerx < current_room_bounds.[2] "goback"
+  if playery > current_room_bounds.[3] "goback"
+  if playery < current_room_bounds.[4] "goback"
+  // restricts the player from going outside of the room boundaries
+  
+  current_collisions = collisions.key(map_location)
+  // gets the current set of colliders for the room
+
+  count = 0
+  loop current_collisions.len (
+    count += 1
+    c = current_collisions.[count]
+    x = c.[1].destr * game_scale / 300
+    y = c.[2].destr * game_scale / 300
+    if location.dist(x,y) < c.[3].destr "goback"
   )
 endef
 
@@ -159,8 +184,10 @@ def "movekeys" "up,down,left,right"
 endef
 
 movekeys "w" "s" "a" "d"
+// sets movement keybinds
 
 loadall
+// loads assets
 
 mainloop:
 
@@ -169,35 +196,44 @@ finish_loading
 if loading.len > 0 (
   loc 999 999 0 0
   load_percent = loading.len / loading_total
+  // calculates the percentage of images loaded
+
   c #333
   bar 300 20 10 1 - load_percent
+  // renders a loading bar for the currently loading images
+
   import "win-buttons"
   exit
+  // exits the script before any more code is run
 )
+// loading screen
 
-current_room = github_link ++ "environments/" ++ playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz ++ ".png"
+map_location = playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz
+current_room = github_link ++ "environments/" ++ map_location ++ ".png"
+// sets values that are referenced by other parts of the progrm a lot
 
 if last_room != current_room (
-image "clear" "last_room"
-last_room = current_room
+  image "clear" "last_room"
+  last_room = current_room
 )
+// clears out old environment images when you leave the area
 
-w = window_width
-game_width = w
+game_width = window_width
 game_height = window_height
+if game_height < game_width "game_scale = game_height"
+if game_height > game_width "game_scale = game_width"
+// sets the game viewport
+
 anim_frame += 0.3
 if anim_frame > anim_length "anim_frame = anim_start"
-if game_height < game_width (
-game_scale = game_height
-)
-if game_height > game_width (
-game_scale = game_width
-)
+// animator, loops through frames of current player animation
 
-speed = 2
-if "shift".pressed "speed += 1"
+speed = 4
+if "shift".pressed "speed += 3"
+// sprint and speed system
 
 image current_room game_scale
+// draws the room background
 
 run_animator
 // line 57 (controls the movement animations of the player)
@@ -208,7 +244,11 @@ run_movement
 run_interactions
 // line 43 (controls the interaction system)
 
+run_collisions
+// line 98 (controls the collision engine)
+
 goto px py
 image github_link ++ "animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
+// renders player
 
 import "win-buttons"
