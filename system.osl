@@ -8,7 +8,10 @@ anim_start = 1
 anim_frame = 1
 anim_length = 4
 current_anim = "idle"
-current_dialogue = ""
+chat_text = ""
+chatx = 0
+chaty = 0
+chatdist = 0
 // sets the current animation
 
 def "new_game"
@@ -21,12 +24,13 @@ playermapz = 1
 endef
 
 debug = false
+// shows colliders when true
 
 loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
 network "get" github_link ++ "levels_data.json"
-data = [{"0x0x0":[130,-130,90,-115],"0x0x1":[130,-130,70,-115],"0x1x0":[130,-130,90,-115]},{"0x0x0":[[-100,120,100],[-50,60,80],[0,60,80],[110,50,70],[110,0,70]],"0x0x1":[[100,60,80],[100,20,80],[-20,60,80],[0,60,80]]},{"0x0x0":[[-110,50,["playermapz += 1"],60],[70,90,["playermapy += 1"],40]],"0x1x0":[],"0x0x1":[[-110,50,["playermapz -= 1"],60]]}]
+data = [{"0x0x0":[130,-130,90,-115],"0x0x1":[130,-130,70,-115],"0x1x0":[130,-130,90,-115]},{"0x0x0":[[-100,120,100],[-50,60,80],[0,60,80],[110,50,70],[110,0,70]],"0x0x1":[[100,60,80],[100,20,80],[-20,60,80],[0,60,80]]},{"0x0x0":[[-110,50,["playermapz += 1"],60],[70,90,["playermapy += 1"],40]],"0x1x0":[],"0x0x1":[[-110,50,["playermapz -= 1"],60],[60,70,["start_chat \"Nothing Much To See Out Here\" 60 70 60"],60]]}]
 room_bounds = data.[1].destr
 // the maximum and minimum x,y co-ords for the player on a specific x,y,z map location
 
@@ -81,8 +85,8 @@ def "run_interactions"
 
     if location.dist(x,y).round < c.[4].destr (
 
-      loc 999 -2 0 50
-      image github_link ++ "ui/interact.png" 70
+      goto lpx lpy + ( game_scale / 8 )
+      image github_link ++ "ui/interact.png" game_scale / 6
       // draws the interact button
 
       if "e".pressed and can "run c.[3]"
@@ -131,8 +135,24 @@ def "run_collisions"
   current_room_bounds = room_bounds.key(map_location)
   // gets the current set of room max xs and ys
 
-  if playerx > current_room_bounds.[1].destr "goback"
-  if playerx < current_room_bounds.[2].destr "goback"
+  mxbound = current_room_bounds.[1].destr
+  lxbound = current_room_bounds.[2].destr
+  mybound = current_room_bounds.[3].destr
+  lybound = current_room_bounds.[4].destr
+  // Sets up the room bounds
+
+  if mxbound == "none" and ( playerx > 110 ) "playermapx += 1"
+  if mxbound != "none" and ( playerx > mxbound ) "goback"
+
+  if lxbound == "none" and ( playerx < -110 ) "playermapx -= 1"
+  if lxbound != "none" and ( playerx < lxbound ) "goback"
+
+  if mybound == "none" and ( playery > 110 ) "playermapy += 1"
+  if mybound != "none" and ( playery > mybound ) "goback"
+
+  if lybound == "none" and ( playery < -110 ) "playermapy -= 1"
+  if lybound != "none" and ( playery < lybound ) "goback"
+
   if playery > current_room_bounds.[3].destr "goback"
   if playery < current_room_bounds.[4].destr "goback"
   // restricts the player from going outside of the room boundaries
@@ -146,12 +166,30 @@ def "run_collisions"
     c = current_collisions.[count]
     x = c.[1].destr * game_scale / 300
     y = c.[2].destr * game_scale / 300
-    if location.dist(x,y) < c.[3].destr "goback"
+    distance = c.[3].destr * game_scale / 600
+    if location.dist(x,y) < distance "goback"
+
     if debug == true "goto x y"
     if debug == true "c #fff"
-    if debug == true "square 0 0 c.[3].destr * 2"
+    if debug == true "square 0 0 distance * 2"
     // debug, shows where the colliders are
   )
+endef
+
+def "run_chat"
+  loc 99999 2 0 -50 * game_scale / 300
+  if playery > 0 (
+    loc 99999 -2 0 50 * game_scale / 300
+  )
+  goto 0 y_position
+  image github_link ++ "ui/Dialogue_box.png" game_scale
+  change game_scale * -0.43 game_scale * 0.08
+  text chat_text game_scale / 70 : c#fff
+endef
+
+def "start_chat" "chat_text,chatx,chaty,chatdist"
+  chatx *= game_scale / 300
+  chaty *= game_scale / 300
 endef
 
 def "load" "link"
@@ -275,14 +313,22 @@ run_animator
 run_movement
 // controls the movement systems of the player
 
-run_interactions
-// controls the interaction system
-
 run_collisions
 // controls the collision engine
 
 goto px py
 image github_link ++ "animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
 // renders player
+
+if chat_text == "" "run_interactions"
+// controls the interaction system
+
+if chat_text != "" (
+run_chat
+if location.dist(chatx,chaty) > chatdist (
+chat_text = ""
+)
+)
+// renders the chat box if the player is talking with an npc
 
 import "win-buttons"
