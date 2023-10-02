@@ -28,9 +28,13 @@ github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
 network "get" github_link ++ "levels_data.json"
 data = [{"0x0x0":[130,-130,90,-115],"0x0x1":[130,-130,70,-115],"0x1x0":[130,-130,90,-115]},{"0x0x0":[[-100,120,100],[-50,60,80],[0,60,80],[110,50,70],[110,0,70]],"0x0x1":[[100,60,80],[100,20,80],[-20,60,80],[0,60,80]]},{"0x0x0":[[-110,50,["playermapz += 1"],60],[70,90,["playermapy += 1"],40]],"0x1x0":[],"0x0x1":[[-110,50,["playermapz -= 1"],60]]}]
 room_bounds = data.[1].destr
+// the maximum and minimum x,y co-ords for the player on a specific x,y,z map location
+
 collisions = data.[2].destr
+// the collisions for a x,y,z map location
+
 interactables = data.[3].destr
-// sets up vital game data
+// the interaction locations and distances and what they do on interaction
 
 def "run_movement"
   prevx = playerx
@@ -40,32 +44,47 @@ def "run_movement"
   if down.pressed "playeryvel -= speed"
   if left.pressed "playerxvel -= speed"
   if right.pressed "playerxvel += speed"
+  // changes the player velocity
 
   playerxvel *= 0.6
   playeryvel *= 0.6
+  // simulates friction
+
   playerx += playerxvel
   playery += playeryvel
+  // actually changes the x,y of the player
 
   px = playerx * game_scale / 300
   py = playery * game_scale / 300
+  // modifies the player x,y by the game scale
 
   lpx = px.round
   lpy = py.round
   location = [].append(lpx).append(lpy)
+  // generates a location variable for distance calculations
 endef
 
 def "run_interactions"
   if "e".pressed.not "can = true"
+  // makes sure that you cannot interact again until you finish the current interaction
+
   current_interactables = interactables.key(map_location)
+  // gets the interaction points for the current map location
+
   count = 0
   loop current_interactables.len (
     count += 1
     c = current_interactables.[count]
     x = c.[1].destr * game_scale / 300
     y = c.[2].destr * game_scale / 300
+    // collects the x,y of an interaction point
+
     if location.dist(x,y).round < c.[4].destr (
+
       loc 999 -2 0 50
       image github_link ++ "ui/interact.png" 70
+      // draws the interact button
+
       if "e".pressed and can "run c.[3]"
       if "e".pressed "can = false"
     )
@@ -131,10 +150,12 @@ def "run_collisions"
     if debug == true "goto x y"
     if debug == true "c #fff"
     if debug == true "square 0 0 c.[3].destr * 2"
+    // debug, shows where the colliders are
   )
 endef
 
 def "load" "link"
+  // loads an image from the oki github
   link = github_link ++ link ++ ".png"
   image link 100
   loading = loading.append(link)
@@ -142,6 +163,7 @@ def "load" "link"
 endef
 
 def "loadall"
+  // loads all the needed animations of the player and ui items
   loading_total = 0
   loaded = false
   load "ui/interact"
@@ -181,6 +203,7 @@ def "goback"
 endef
 
 def "finish_loading"
+  // continues to load any images that weren't loaded in the initial setup
   count = 0
   loop loading.len (
     count += 1
