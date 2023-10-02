@@ -1,25 +1,33 @@
 window "show"
 window "dimensions" 1000 700
+
 camx = 0
 camy = 0
+
 anim_start = 1
 anim_frame = 1
 anim_length = 4
 current_anim = "idle"
+// sets the current animation
+
+def "new_game"
 playerx = 0
 playery = 0
-speed = 3
 
 playermapx = 0
 playermapy = 0
 playermapz = 1
+endef
+
+debug = false
 
 loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/koi/main/"
-room_bounds = {"0x0x1":[110,-110,110,-110]}
-collisions = {"0x0x1":[[110,50,100]]}
-interactables = {"0x0x1":[[-110,50,["playermapz -= 1"],60,]]}
+room_bounds = {"0x0x1":[130,-130,70,-115]}
+collisions = {"0x0x1":[[110,40,200],[-20,60,100],[20,60,100]]}
+interactables = {"0x0x1":[[-110,50,["playermapz -= 1"],60]]}
+// sets up vital game data
 
 def "run_movement"
   prevx = playerx
@@ -53,7 +61,7 @@ def "run_interactions"
     y = c.[2].destr * game_scale / 300
     if location.dist(x,y).round < c.[4].destr (
       loc 999 -2 0 50
-      image "https://raw.githubusercontent.com/Kasairoe/koi/main/ui/interact.png" 70
+      image github_link ++ "ui/interact.png" 70
       if "e".pressed "run c.[3]"
     )
   )
@@ -98,12 +106,13 @@ endef
 
 def "run_collisions"
   current_room_bounds = room_bounds.key(map_location)
+  log current_room_bounds
   // gets the current set of room max xs and ys
 
-  if playerx > current_room_bounds.[1] "goback"
-  if playerx < current_room_bounds.[2] "goback"
-  if playery > current_room_bounds.[3] "goback"
-  if playery < current_room_bounds.[4] "goback"
+  if playerx > current_room_bounds.[1].destr "goback"
+  if playerx < current_room_bounds.[2].destr "goback"
+  if playery > current_room_bounds.[3].destr "goback"
+  if playery < current_room_bounds.[4].destr "goback"
   // restricts the player from going outside of the room boundaries
   
   current_collisions = collisions.key(map_location)
@@ -116,6 +125,9 @@ def "run_collisions"
     x = c.[1].destr * game_scale / 300
     y = c.[2].destr * game_scale / 300
     if location.dist(x,y) < c.[3].destr "goback"
+    if debug == true "goto x y"
+    if debug == true "c #fff"
+    if debug == true "square 0 0 c.[3].destr * 2"
   )
 endef
 
@@ -155,13 +167,6 @@ def "loadall"
     count += 1
     load "animations/player/right/" ++ count
   )
-  load "environments/" ++ playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz
-endef
-
-def "interact" "t"
-  loc 999 -2 0 50
-  image interact_url 70
-  if "e".pressed t
 endef
 
 def "goback"
@@ -189,6 +194,9 @@ movekeys "w" "s" "a" "d"
 loadall
 // loads assets
 
+new_game
+// creates a new game
+
 mainloop:
 
 finish_loading
@@ -197,7 +205,6 @@ if loading.len > 0 (
   loc 999 999 0 0
   load_percent = loading.len / loading_total
   // calculates the percentage of images loaded
-
   c #333
   bar 300 20 10 1 - load_percent
   // renders a loading bar for the currently loading images
@@ -209,6 +216,7 @@ if loading.len > 0 (
 // loading screen
 
 map_location = playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz
+log map_location
 current_room = github_link ++ "environments/" ++ map_location ++ ".png"
 // sets values that are referenced by other parts of the progrm a lot
 
@@ -236,16 +244,16 @@ image current_room game_scale
 // draws the room background
 
 run_animator
-// line 57 (controls the movement animations of the player)
+// controls the movement animations of the player
 
 run_movement
-// line 22 (controls the movement systems of the player)
+// controls the movement systems of the player
 
 run_interactions
-// line 43 (controls the interaction system)
+// controls the interaction system
 
 run_collisions
-// line 98 (controls the collision engine)
+// controls the collision engine
 
 goto px py
 image github_link ++ "animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
