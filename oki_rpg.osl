@@ -307,8 +307,10 @@ if "shift".pressed "speed += 3"
 image current_room game_scale
 // draws the room background
 
+if anim_start != 1 or up.pressed or left.pressed or right.pressed or down.pressed (
 run_animator
 // controls the movement animations of the player
+)
 
 if "any".pressed (
 run_movement
