@@ -14,7 +14,7 @@ playermapx = 0
 playermapy = 0
 playermapz = 1
 
-interact_url = "https://raw.githubusercontent.com/Kasairoe/koi/main/ui/interact.png"
+interact_url = "https://raw.githubusercontent.com/Kasairoe/oki/main/ui/interact.png"
 image interact_url 100
 
 interactables = {"0":{"0":{"1":[[-120,50,"playermapz -= 1",60]]}}}
@@ -38,7 +38,7 @@ left = "a"
 right = "d"
 
 mainloop:
-current_room = "https://raw.githubusercontent.com/Kasairoe/koi/main/environments/" ++ playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz ++ ".png"
+current_room = "https://raw.githubusercontent.com/Kasairoe/oki/main/environments/" ++ playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz ++ ".png"
 w = window_width
 game_width = w
 game_height = window_height
@@ -125,6 +125,6 @@ icon "Close" 1 : c#fff
 )
 
 goto px py
-image "https://raw.githubusercontent.com/Kasairoe/koi/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
+image "https://raw.githubusercontent.com/Kasairoe/oki/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
 
 import "win-buttons"
