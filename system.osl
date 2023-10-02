@@ -24,7 +24,7 @@ debug = false
 loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
-game_data = [{"0x0x0":[130,-130,70,-115],"0x0x1":[130,-130,70,-115]},{"0x0x0":[],"0x0x1":[[110,40,200],[-20,60,100],[20,60,100]]},{"0x0x0":[[-110,50,["playermapz += 1"],60]],"0x0x1":[[-110,50,["playermapz -= 1"],60]]}]
+game_data = [{"0x0x0":[130,-130,70,-115],"0x0x1":[130,-130,90,-115],"0x1x0":[130,-130,90,-115]},{"0x0x0":[],"0x0x1":[[110,40,200],[-20,60,100],[20,60,100]]},{"0x0x0":[[-110,50,["playermapz += 1"],60]],"0x1x0":[[110,70,["playermapy += 1"],40]],"0x0x1":[[-110,50,["playermapz -= 1"],60]]}]
 room_bounds = game_data.[1]
 collisions = game_data.[2]
 interactables = game_data.[3]
