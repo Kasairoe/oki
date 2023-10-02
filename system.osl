@@ -106,7 +106,6 @@ endef
 
 def "run_collisions"
   current_room_bounds = room_bounds.key(map_location)
-  log current_room_bounds
   // gets the current set of room max xs and ys
 
   if playerx > current_room_bounds.[1].destr "goback"
