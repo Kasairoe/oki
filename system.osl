@@ -24,9 +24,10 @@ debug = false
 loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
-room_bounds = {"0x0x1":[130,-130,70,-115]}
-collisions = {"0x0x1":[[110,40,200],[-20,60,100],[20,60,100]]}
-interactables = {"0x0x1":[[-110,50,["playermapz -= 1"],60]]}
+game_data = [{"0x0x0":[130,-130,70,-115],"0x0x1":[130,-130,70,-115]},{"0x0x0":[],"0x0x1":[[110,40,200],[-20,60,100],[20,60,100]]},{"0x0x0":[[-110,50,["playermapz += 1"],60]],"0x0x1":[[-110,50,["playermapz -= 1"],60]]}]
+room_bounds = game_data.[1]
+collisions = game_data.[2]
+interactables = game_data.[3]
 // sets up vital game data
 
 def "run_movement"
@@ -52,6 +53,7 @@ def "run_movement"
 endef
 
 def "run_interactions"
+  if "e".pressed.not "can = true"
   current_interactables = interactables.key(map_location)
   count = 0
   loop current_interactables.len (
@@ -62,7 +64,8 @@ def "run_interactions"
     if location.dist(x,y).round < c.[4].destr (
       loc 999 -2 0 50
       image github_link ++ "ui/interact.png" 70
-      if "e".pressed "run c.[3]"
+      if "e".pressed and can "run c.[3]"
+      if "e".pressed "can = false"
     )
   )
 endef
