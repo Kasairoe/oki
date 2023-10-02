@@ -310,11 +310,13 @@ image current_room game_scale
 run_animator
 // controls the movement animations of the player
 
+if "any".pressed (
 run_movement
 // controls the movement systems of the player
 
 run_collisions
 // controls the collision engine
+)
 
 goto px py
 image github_link ++ "animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
