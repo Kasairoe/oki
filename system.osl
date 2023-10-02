@@ -14,31 +14,174 @@ playermapx = 0
 playermapy = 0
 playermapz = 1
 
-interact_url = "https://raw.githubusercontent.com/Kasairoe/oki/main/ui/interact.png"
-image interact_url 100
+loading = []
 
-interactables = {"0":{"0":{"1":[[-120,50,"playermapz -= 1",60]]}}}
+github_link = "https://raw.githubusercontent.com/Kasairoe/koi/main/"
+interactables = {"0x0x1":[[-110,50,["playermapz -= 1"],60]]}
+
+def "run_movement"
+  prevx = playerx
+  prevy = playery
+
+  if up.pressed "playeryvel += speed"
+  if down.pressed "playeryvel -= speed"
+  if left.pressed "playerxvel -= speed"
+  if right.pressed "playerxvel += speed"
+
+  playerxvel *= 0.7
+  playeryvel *= 0.7
+  playerx += playerxvel
+  playery += playeryvel
+
+  px = playerx * game_scale / 300
+  py = playery * game_scale / 300
+
+  lpx = px.round
+  lpy = py.round
+endef
+
+def "run_interactions"
+  location = [].append(lpx).append(lpy)
+  current_interactables = interactables.key(playermapx).key(playermapy).key(playermapz)
+  count = 0
+  loop current_interactables.len (
+    count += 1
+    c = current_interactables.[count]
+    x = c.[1].destr * game_scale / 300
+    y = c.[2].destr * game_scale / 300
+    if location.dist(x,y).round < c.[4].destr (
+      loc 999 -2 0 50
+      image "https://raw.githubusercontent.com/Kasairoe/koi/main/ui/interact.png" 70
+      if "e".pressed "run c.[3]"
+    )
+  )
+endef
+
+def "run_animator"
+  if current_anim != "idle" and up.pressed.not and left.pressed.not and right.pressed.not and down.pressed.not (
+    anim_start = 1
+    anim_frame = 1
+    anim_length = 4
+    current_anim = "idle"
+  )
+  
+  if current_anim != "up" and up.pressed (
+    anim_start = 5
+    anim_frame = 5
+    anim_length = 10
+    current_anim = "up"
+  )
+  
+  if current_anim != "left" and left.pressed (
+    anim_start = 5
+    anim_frame = 5
+    anim_length = 10
+    current_anim = "left"
+  )
+  
+  if current_anim != "down" and down.pressed (
+    anim_start = 5
+    anim_frame = 5
+    anim_length = 10
+    current_anim = "down"
+  )
+  
+  if current_anim != "right" and right.pressed (
+    anim_start = 5
+    anim_frame = 5
+    anim_length = 10
+    current_anim = "right"
+  )
+endef
+
+def "load" "link"
+  link = github_link ++ link ++ ".png"
+  image link 100
+  loading = loading.append(link)
+  loading_total += 1
+endef
+
+def "loadall"
+  loading_total = 0
+  loaded = false
+  load "ui/interact"
+  count = 0
+  loop 4 (
+    count += 1
+    load "animations/player/idle/" ++ count
+  )
+  count = 0
+  loop 17 (
+    count += 1
+    load "animations/player/down/" ++ count
+  )
+  count = 0
+  loop 17 (
+    count += 1
+    load "animations/player/up/" ++ count
+  )
+  count = 0
+  loop 17 (
+    count += 1
+    load "animations/player/left/" ++ count
+  )
+  count = 0
+  loop 17 (
+    count += 1
+    load "animations/player/right/" ++ count
+  )
+  load "environments/" ++ playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz
+endef
 
 def "interact" "t"
-loc 999 -2 0 50
-image interact_url 70
-if "e".pressed t
+  loc 999 -2 0 50
+  image interact_url 70
+  if "e".pressed t
 endef
 
 def "goback"
-playerx = prevx
-playery = prevy
-playerxvel = 0
-playeryvel = 0
+  playerx = prevx
+  playery = prevy
+  playerxvel = 0
+  playeryvel = 0
 endef
 
-up = "w"
-down = "s"
-left = "a"
-right = "d"
+def "finish_loading"
+  count = 0
+  loop loading.len (
+    count += 1
+    if loading.[count].imageinfo("loaded") "loading = loading.delete(count)"
+    image loading.[count] 0
+  )
+endef
+
+def "movekeys" "up,down,left,right"
+endef
+
+movekeys "w" "s" "a" "d"
+
+loadall
 
 mainloop:
-current_room = "https://raw.githubusercontent.com/Kasairoe/oki/main/environments/" ++ playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz ++ ".png"
+
+finish_loading
+
+if loading.len > 0 (
+  loc 999 999 0 0
+  load_percent = loading.len / loading_total
+  c #333
+  bar 300 20 10 1 - load_percent
+  import "win-buttons"
+  exit
+)
+
+current_room = github_link ++ "environments/" ++ playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz ++ ".png"
+
+if last_room != current_room (
+image "clear" "last_room"
+last_room = current_room
+)
+
 w = window_width
 game_width = w
 game_height = window_height
@@ -54,77 +197,18 @@ game_scale = game_width
 speed = 2
 if "shift".pressed "speed += 1"
 
-if current_anim != "idle" and up.pressed.not and left.pressed.not and right.pressed.not and down.pressed.not (
-  anim_start = 1
-  anim_frame = 1
-  anim_length = 4
-  current_anim = "idle"
-)
-
-if current_anim != "up" and up.pressed (
-  anim_start = 5
-  anim_frame = 5
-  anim_length = 10
-  current_anim = "up"
-)
-
-if current_anim != "left" and left.pressed (
-  anim_start = 5
-  anim_frame = 5
-  anim_length = 10
-  current_anim = "left"
-)
-
-if current_anim != "down" and down.pressed (
-  anim_start = 5
-  anim_frame = 5
-  anim_length = 10
-  current_anim = "down"
-)
-
-if current_anim != "right" and right.pressed (
-  anim_start = 5
-  anim_frame = 5
-  anim_length = 10
-  current_anim = "right"
-)
-
-prevx = playerx
-prevy = playery
-
-if up.pressed "playeryvel += speed"
-if down.pressed "playeryvel -= speed"
-if left.pressed "playerxvel -= speed"
-if right.pressed "playerxvel += speed"
-
-playerxvel *= 0.7
-playeryvel *= 0.7
-playerx += playerxvel
-playery += playeryvel
-
-px = playerx * game_scale / 300
-py = playery * game_scale / 300
-
-lpx = px.round
-lpy = py.round
-
 image current_room game_scale
 
-location = [].append(lpx).append(lpy)
+run_animator
+// line 57 (controls the movement animations of the player)
 
-current_interactables = interactables.key(playermapx).key(playermapy).key(playermapz)
-count = 0
-loop current_interactables.len (
-count += 1
-c = current_interactables.[count]
-x = c.[1].destr * game_scale / 300
-y = c.[2].destr * game_scale / 300
-if location.dist(x,y).round < c.[4].destr "interact c.[3]"
-goto x y
-icon "Close" 1 : c#fff
-)
+run_movement
+// line 22 (controls the movement systems of the player)
+
+run_interactions
+// line 43 (controls the interaction system)
 
 goto px py
-image "https://raw.githubusercontent.com/Kasairoe/oki/main/animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
+image github_link ++ "animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
 
 import "win-buttons"
