@@ -20,15 +20,15 @@ playermapy = 0
 playermapz = 1
 endef
 
-debug = false
+debug = true
 
 loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
 network "get" github_link ++ "levels_data.json"
-room_bounds = data.[1]
-collisions = data.[2]
-interactables = data.[3]
+room_bounds = data.[1].destr
+collisions = data.[2].destr
+interactables = data.[3].destr
 // sets up vital game data
 
 def "run_movement"
@@ -219,7 +219,6 @@ if loading.len > 0 (
 // loading screen
 
 map_location = playermapx ++ "x" ++ playermapy ++ "x" ++ playermapz
-log map_location
 current_room = github_link ++ "environments/" ++ map_location ++ ".png"
 // sets values that are referenced by other parts of the progrm a lot
 
