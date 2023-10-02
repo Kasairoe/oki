@@ -26,10 +26,9 @@ loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
 network "get" github_link ++ "levels_data.json"
-game_data = data.replace(newline,"")
-room_bounds = game_data.[1]
-collisions = game_data.[2]
-interactables = game_data.[3]
+room_bounds = data.[1]
+collisions = data.[2]
+interactables = data.[3]
 // sets up vital game data
 
 def "run_movement"
