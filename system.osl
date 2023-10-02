@@ -8,6 +8,7 @@ anim_start = 1
 anim_frame = 1
 anim_length = 4
 current_anim = "idle"
+current_dialogue = ""
 // sets the current animation
 
 def "new_game"
@@ -71,11 +72,10 @@ def "run_interactions"
 endef
 
 def "run_animator"
-  if current_anim != "idle" and up.pressed.not and left.pressed.not and right.pressed.not and down.pressed.not (
+  if anim_start != 1 and up.pressed.not and left.pressed.not and right.pressed.not and down.pressed.not (
     anim_start = 1
     anim_frame = 1
     anim_length = 4
-    current_anim = "idle"
   )
   
   if current_anim != "up" and up.pressed (
@@ -144,28 +144,29 @@ def "loadall"
   loading_total = 0
   loaded = false
   load "ui/interact"
+  load "ui/Dialogue_box"
   count = 0
   loop 4 (
     count += 1
     load "animations/player/idle/" ++ count
   )
   count = 0
-  loop 17 (
+  loop 10 (
     count += 1
     load "animations/player/down/" ++ count
   )
   count = 0
-  loop 17 (
+  loop 10 (
     count += 1
     load "animations/player/up/" ++ count
   )
   count = 0
-  loop 17 (
+  loop 10 (
     count += 1
     load "animations/player/left/" ++ count
   )
   count = 0
-  loop 17 (
+  loop 10 (
     count += 1
     load "animations/player/right/" ++ count
   )
