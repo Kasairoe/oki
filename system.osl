@@ -23,7 +23,7 @@ debug = false
 
 loading = []
 
-github_link = "https://raw.githubusercontent.com/Kasairoe/koi/main/"
+github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
 room_bounds = {"0x0x1":[130,-130,70,-115]}
 collisions = {"0x0x1":[[110,40,200],[-20,60,100],[20,60,100]]}
 interactables = {"0x0x1":[[-110,50,["playermapz -= 1"],60]]}
