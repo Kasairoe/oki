@@ -316,6 +316,8 @@ run_animator
 )
 
 if "any".pressed (
+// This is a very good optimisation, these files are laggy
+
 run_movement
 // controls the movement systems of the player
 
