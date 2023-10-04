@@ -285,9 +285,12 @@ current_room = github_link ++ "environments/" ++ map_location ++ ".png"
 // sets values that are referenced by other parts of the progrm a lot
 
 if last_room != current_room (
-  image "clear" "last_room"
+  image "clear" last_room
   last_room = current_room
+  load_animate = true
+  load_x = 500
 )
+
 // clears out old environment images when you leave the area
 
 game_width = window_width
@@ -328,10 +331,10 @@ if chat_text == "" "run_interactions"
 // controls the interaction system
 
 if chat_text != "" (
-run_chat
-if location.dist(chatx,chaty) > chatdist (
-chat_text = ""
-)
+  run_chat
+  if location.dist(chatx,chaty) > chatdist (
+    chat_text = ""
+  )
 )
 // renders the chat box if the player is talking with an npc
 
