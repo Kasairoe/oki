@@ -1,6 +1,8 @@
 window "show"
 window "dimensions" 1000 700
 
+seticon "image https://raw.githubusercontent.com/Kasairoe/oki/main/oki-icon.png 20"
+
 camx = 0
 camy = 0
 
@@ -288,7 +290,8 @@ if last_room != current_room (
   image "clear" last_room
   last_room = current_room
   load_animate = true
-  load_x = 500
+  target = 0
+  load_x = 2
 )
 
 // clears out old environment images when you leave the area
@@ -307,15 +310,17 @@ speed = 4
 if "shift".pressed "speed += 3"
 // sprint and speed system
 
+if load_animate.not (
 image current_room game_scale
 // draws the room background
+)
 
 if anim_start != 1 or up.pressed or left.pressed or right.pressed or down.pressed (
 run_animator
 // controls the movement animations of the player
 )
 
-if "any".pressed (
+if "any".pressed and load_animate.not (
 // This is a very good optimisation, these files are laggy
 
 run_movement
@@ -326,13 +331,15 @@ run_collisions
 )
 
 goto px py
+if load_animate.not (
 image github_link ++ "animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
 // renders player
+)
 
-if chat_text == "" "run_interactions"
+if chat_text == "" and load_animate.not "run_interactions"
 // controls the interaction system
 
-if chat_text != "" (
+if chat_text != "" and load_animate.not (
   run_chat
   if location.dist(chatx,chaty) > chatdist (
     chat_text = ""
@@ -340,4 +347,20 @@ if chat_text != "" (
 )
 // renders the chat box if the player is talking with an npc
 
+frame "clear"
 import "win-buttons"
+
+if target == 0 and load_animate (
+  load_x += 0 - load_x / 3
+  goto load_x * game_scale 0
+  image current_room 10
+  image github_link ++ "oki-icon.png" game_scale
+  if load_x < 0.1 and current_room.imageinfo("loaded") "target = -2"
+)
+if target == -2 (
+  load_animate = false
+  load_x += -2 - load_x / 10
+  goto load_x * game_scale 0
+  image github_link ++ "oki-icon.png" game_scale
+  if load_x < -1.9 "target = 0"
+)
