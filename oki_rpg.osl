@@ -32,7 +32,7 @@ loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
 network "get" github_link ++ "levels_data.json"
-data = [{"0x0x0":[130,-130,90,-115],"0x0x1":[130,-130,70,-115],"0x1x0":[130,-130,90,-115]},{"0x0x0":[[-100,120,100],[-50,60,80],[0,60,80],[110,50,70],[110,0,70]],"0x0x1":[[100,60,80],[100,20,80],[-20,60,80],[0,60,80]]},{"0x0x0":[[-110,50,["playermapz += 1"],60],[70,90,["playermapy += 1"],40]],"0x1x0":[],"0x0x1":[[-110,50,["playermapz -= 1"],60],[60,70,["start_chat \"Nothing Much To See Out Here\" 60 70 60"],60]]}]
+data = [{"0x0x0":[130,-130,90,-115],"0x0x1":[130,-130,70,-115],"0x1x0":[130,-130,90,-115]},{"0x0x0":[[-20,50,120,50]],"0x0x1":[[110,40,80,130],[-20,50,70,70]]},{"0x0x0":[[-110,50,["playermapz += 1"],60],[70,90,["playermapy += 1"],40]],"0x0x1":[[-110,50,["playermapz -= 1"],60],[60,70,["start_chat \"Nothing Much To See Out Here\" 60 70 60"],60]]}]
 room_bounds = data.[1].destr
 // the maximum and minimum x,y co-ords for the player on a specific x,y,z map location
 
@@ -50,11 +50,11 @@ def "run_movement"
   if down.pressed "playeryvel -= speed"
   if left.pressed "playerxvel -= speed"
   if right.pressed "playerxvel += speed"
-  // changes the player velocity
+  // changes the player velocity based on keys pressed
 
   playerxvel *= 0.6
   playeryvel *= 0.6
-  // simulates friction
+  // friction calculation: decreases velocity over time
 
   playerx += playerxvel
   playery += playeryvel
@@ -67,7 +67,7 @@ def "run_movement"
   lpx = px.round
   lpy = py.round
   location = [].append(lpx).append(lpy)
-  // generates a location variable for distance calculations
+  // generates a variables for collisions checks
 endef
 
 def "run_interactions"
@@ -86,13 +86,11 @@ def "run_interactions"
     // collects the x,y of an interaction point
 
     if location.dist(x,y).round < c.[4].destr (
-
       goto lpx lpy + ( game_scale / 8 )
       image github_link ++ "ui/interact.png" game_scale / 6
       // draws the interact button
 
-      if "e".pressed and can "run c.[3]"
-      if "e".pressed "can = false"
+      if "e".onpress "run c.[3]"
     )
   )
 endef
@@ -154,27 +152,23 @@ def "run_collisions"
 
   if lybound == "none" and ( playery < -110 ) "playermapy -= 1"
   if lybound != "none" and ( playery < lybound ) "goback"
-
-  if playery > current_room_bounds.[3].destr "goback"
-  if playery < current_room_bounds.[4].destr "goback"
   // restricts the player from going outside of the room boundaries
   
   current_collisions = collisions.key(map_location)
   // gets the current set of colliders for the room
 
   count = 0
+  if debug (
+    c #fff
+    hitbox "show"
+  )
   loop current_collisions.len (
     count += 1
     c = current_collisions.[count]
-    x = c.[1].destr * game_scale / 300
-    y = c.[2].destr * game_scale / 300
-    distance = c.[3].destr * game_scale / 600
-    if location.dist(x,y) < distance "goback"
-
-    if debug == true "goto x y"
-    if debug == true "c #fff"
-    if debug == true "square 0 0 distance * 2"
-    // debug, shows where the colliders are
+    temp = game_scale / 300
+    goto c.[1].destr * temp c.[2].destr * temp
+    hitbox c.[3].destr * temp c.[4].destr * temp lpx lpy
+    if collided "goback"
   )
 endef
 
