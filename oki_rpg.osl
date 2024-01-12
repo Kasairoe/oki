@@ -32,7 +32,7 @@ loading = []
 
 github_link = "https://raw.githubusercontent.com/Kasairoe/oki/main/"
 network "get" github_link ++ "levels_data.json"
-data = [{"0x0x0":[130,-130,90,-115],"0x0x1":[130,-130,70,-115],"0x1x0":[130,-130,90,-115]},{"0x0x0":[[-20,50,120,50]],"0x0x1":[[110,40,80,130],[-20,70,70,60]]},{"0x0x0":[[-110,50,["playermapz += 1"],60,60],[70,90,["playermapy += 1"],40,40]],"0x0x1":[[-110,60,["playermapz -= 1"],70,70],[60,70,["start_chat \"Nothing Much To See Out Here\" 60 70 60"],60,60]]}]
+data = [{"0x0x0":[130,-130,90,-115],"0x0x1":[130,-130,70,-115],"0x1x0":[130,-130,90,-115]},{"0x0x0":[[-25,60,130,60],[120,40,60,100]],"0x0x1":[[110,40,80,130],[-20,70,70,60]]},{"0x0x0":[[-110,50,["playermapz += 1"],80,80],[90,90,["playermapy += 1"],40,40]],"0x0x1":[[-110,60,["playermapz -= 1"],80,80],[60,70,["start_chat \"Nothing Much To See Out Here\" 60 70 60"],60,60]]}]
 room_bounds = data.[1].destr
 // the maximum and minimum x,y co-ords for the player on a specific x,y,z map location
 
@@ -303,29 +303,29 @@ if "shift".pressed "speed += 3"
 // sprint and speed system
 
 if load_animate.not (
-image current_room game_scale
-// draws the room background
+  image current_room game_scale
+  // draws the room background
 )
 
 if anim_start != 1 or up.pressed or left.pressed or right.pressed or down.pressed (
-run_animator
-// controls the movement animations of the player
+  run_animator
+  // controls the movement animations of the player
 )
 
 if "any".pressed and load_animate.not (
-// This is a very good optimisation, these files are laggy
+  // This is a very good optimisation, these files are laggy
 
-run_movement
-// controls the movement systems of the player
+  run_movement
+  // controls the movement systems of the player
 
-run_collisions
-// controls the collision engine
+  run_collisions
+  // controls the collision engine
 )
 
 goto px py
 if load_animate.not (
-image github_link ++ "animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
-// renders player
+  image github_link ++ "animations/player/" ++ current_anim ++ "/" ++ anim_frame.round ++ ".png" game_scale / 6
+  // renders player
 )
 
 if chat_text == "" and load_animate.not "run_interactions"
@@ -337,7 +337,7 @@ if chat_text != "" and load_animate.not (
     chat_text = ""
   )
 )
-// renders the chat box if the player is talking with an npc
+// renders the chat box
 
 frame "clear"
 import "win-buttons"
